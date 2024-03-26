@@ -1,7 +1,10 @@
-import request from './request'
+import request from '../utils/request'
 
 export function login(data) {
   return request({
+    headers: {
+      isToken: false,
+    },
     url: '/user/login',
     method: 'post',
     data:data,

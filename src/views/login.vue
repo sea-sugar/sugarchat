@@ -81,31 +81,28 @@ export default {
           if (valid) {
             this.paramsLogin.user_id = this.form.user_id ;
             this.paramsLogin.password = this.form.password ;
-            login(this.paramsLogin).then(res =>{
-                if (res.code === 200) {
-                  setToken(res.data.token);
-                  localStorage.setItem("USERNAME", res.data.username);
-                  this.$message({
-                    message: "登录成功啦",
-                    type: "success",
-                    showClose: true,
-                  });
-                  this.$router.replace("/");
-                } else {
-                  this.$message({
-                    message: "账户名或密码错误",
-                    type: "error",
-                    showClose: true,
-                  });
-                }
-            }).catch(err =>{
-                console.log(err);
+            this.$store.dispatch("Login", this.paramsLogin).then((res) => {
+              if (res.msg === 'success') {
                 this.$message({
-                  message: "账户名或密码错误",
+                  message: "登录成功",
+                  type: "success",
+                  showClose: true,
+                });
+                this.$router.replace("/index");
+              }
+              else{
+                this.$message({
+                  message: res.msg,
                   type: "error",
                   showClose: true,
                 });
-            })
+                this.form.password = '';
+              }
+                  
+            }).catch((err) => {
+              console.log(err);
+            });
+
           } else {
             return false;
           }
@@ -122,7 +119,7 @@ export default {
       forgetpas() {
         this.$message({
           type:"info",
-          message:"功能尚未开发额😥",
+          message:"功能尚未开发",
           showClose:true
         })
       },

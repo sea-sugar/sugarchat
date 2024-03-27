@@ -7,18 +7,30 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'index',
-    component: () => import('../views/index.vue')
+    redirect: '/index' 
   },
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/login.vue')
+    component: () => import('@/views/login.vue')
   },
   {
     path: '/index',
     name: 'index',
-    component: () => import('../views/index.vue')
+    component: () => import('@/views/index.vue')
+  },
+  {
+    path: '/404',
+    name: '404',
+    meta: {
+      title: 'Page not found',
+    },
+    component: () => import('@/views/404.vue')
+  },
+  // 所有未定义路由，全部重定向到404页
+  {
+    path: '*',
+    redirect: '/404'
   }
 ]
 

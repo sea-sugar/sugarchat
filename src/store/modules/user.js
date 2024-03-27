@@ -1,4 +1,4 @@
-import { login } from '@/apis/user'
+import { login , getInfo ,logout} from '@/apis/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -42,6 +42,26 @@ const user = {
             }
         }).catch(error => {
             reject(error)
+        })
+      })
+    },
+
+    // 获取用户信息
+    GetInfo({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        getInfo().then(res => {
+          if (res.data.userinfo) { // 判断是否存在用户信息
+            commit('SET_TOKEN', res.data.token)
+            commit('SET_NAME', res.data.userinfo.username)
+            commit('SET_AVATAR', res.data.userinfo.avatar)
+            commit('SET_ID', res.data.userinfo.user_id)
+          } else {
+            // 用户信息为空，进行相应处理
+            reject(new Error('登录过期'))
+          }
+          resolve(res)
+        }).catch(error => {
+          reject(error)
         })
       })
     },

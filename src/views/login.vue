@@ -5,7 +5,7 @@
           <h2>Welcome</h2>
         </div>
         <div class="formdata">
-          <el-form ref="form" :model="form" :rules="rules">
+          <el-form ref="form" :model="form" :rules="rules" @keyup.enter.native="login('form')">
             <el-form-item prop="user_id">
               <el-input
                 v-model="form.user_id"
@@ -25,7 +25,7 @@
         </div>
         <div class="tool">
           <div>
-            <el-checkbox v-model="checked" @change="remenber"
+            <el-checkbox v-model="remember" 
               >记住密码</el-checkbox
             >
           </div>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="butt">
-          <el-button type="primary" @click.native.prevent="login('form')"
+          <el-button type="primary" @click.native.prevent="login('form')" :disabled="loading" 
             >登录</el-button
           >
           <el-button class="shou" @click="register">注册</el-button>
@@ -44,7 +44,8 @@
 </template>
   
 <script>
-  
+import  { Base64 } from 'js-base64'
+import { getCookie , setCookie , removeCookie } from '@/utils/auth';
 export default {
     name: "login",
     data() {
@@ -53,34 +54,45 @@ export default {
           password: "",
           user_id: "",
         },
-        checked: false,
+        remember: false,
+        loading:false,
         paramsLogin : {
             user_id:'',
             password:'',
         },
         rules: {
-          username: [
-            { required: true, message: "请输入用户名", trigger: "blur" },
-            { max: 10, message: "不能大于10个字符", trigger: "blur" },
-          ],
           password: [
             { required: true, message: "请输入密码", trigger: "blur" },
-            { max: 10, message: "不能大于10个字符", trigger: "blur" },
+            { pattern: /^[a-zA-Z0-9_-]{4,16}$/, message: "密码需在4到16位(字母，数字，下划线，减号)", trigger: "blur" }
+          ],
+          user_id: [
+            { required: true, message: "请输入用户名", trigger: "blur" },
+            { pattern: /^[a-zA-Z0-9]{3,10}$/, message: "用户名应是3到10位，只能包含字母和数字", trigger: "blur" }
           ],
         },
       };
     },
-    mounted() {
-
+    mounted(){
+      // 在页面加载时从cookie获取登录信息
+      let remember = getCookie("remember")
+      if(remember){
+          this.form.user_id = getCookie("user_id")
+          this.form.password = Base64.decode(getCookie("password"))
+          this.remember = getCookie("remember")
+      }
     },
     methods: {
       login(form) {
+        this.loading = true ;
         this.$refs[form].validate((valid) => {
           if (valid) {
             this.paramsLogin.user_id = this.form.user_id ;
             this.paramsLogin.password = this.form.password ;
+            console.log(this.paramsLogin.user_id);
+            console.log(this.paramsLogin.password);
             this.$store.dispatch("Login", this.paramsLogin).then((res) => {
               if (res.msg === 'success') {
+                this.remenber()
                 this.$message({
                   message: "登录成功",
                   type: "success",
@@ -95,24 +107,35 @@ export default {
                   showClose: true,
                 });
                 this.form.password = '';
+                removeCookie("user_id")
+                removeCookie("password") 
+                removeCookie("remember")
               }
                   
             }).catch((err) => {
               console.log(err);
             });
-
+            this.loading = false ;
           } else {
+            this.loading = false ;
             return false;
           }
         });
       },
-      remenber(data){
-        this.checked=data
-        if(this.checked){
-            localStorage.setItem("news",JSON.stringify(this.form))
+      remenber(){
+        this.loading = true ;
+        if(this.remember){
+            setCookie("user_id",this.form.user_id)
+            // base64加密密码
+            let passWord = Base64.encode(this.form.password)
+            setCookie("password",passWord)   
+            setCookie("remember",this.remember)   
         }else{
-          localStorage.removeItem("news")
-        }
+          removeCookie("user_id")
+          removeCookie("password") 
+          removeCookie("remember")   
+        } 
+        this.loading = false ;
       },
       forgetpas() {
         this.$message({

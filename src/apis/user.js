@@ -28,12 +28,12 @@ export function getInfo() {
   })
 }
 
-// export function login(query) {
-//     return request({
-//       url: '/login',
-//       method: 'post',
-//       params: query
-//     })
-//   }
-// 
-  
+export function register(data) {
+    return request({
+      url: '/user/register',
+      method: 'post',
+      data: data
+    })
+}
+
+// params: query

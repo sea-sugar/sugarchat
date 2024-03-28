@@ -6,13 +6,13 @@ import { getToken } from '@/utils/auth'
 NProgress.configure({ showSpinner: true })   // 显示右上角螺旋加载提示
 
 
-const whiteList = ['/login']
+const whiteList = ['/login','/register']
 
 router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) { 
     //有token
-    if (to.path === '/login') {
+    if (whiteList.includes(to.path)) {
       next({ path: '/index' })
       NProgress.done()
     } 

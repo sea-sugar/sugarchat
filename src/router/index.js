@@ -20,6 +20,11 @@ const routes = [
     component: () => import('@/views/index.vue')
   },
   {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/register.vue')
+  },
+  {
     path: '/404',
     name: '404',
     meta: {

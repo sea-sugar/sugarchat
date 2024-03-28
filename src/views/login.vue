@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="butt">
-          <el-button type="primary" @click.native.prevent="login('form')" :disabled="loading" 
+          <el-button type="primary" @click.native.prevent="login('form')" :loading="loading" 
             >登录</el-button
           >
           <el-button class="shou" @click="register">注册</el-button>
@@ -144,7 +144,9 @@ export default {
           showClose:true
         })
       },
-      register() {},
+      register(){
+        this.$router.push('/register');
+      },
     },
   };
   </script>
@@ -195,6 +197,7 @@ export default {
   .shou {
     cursor: pointer;
     color: #606266;
+    font-size: 14px;
   }
   
   /*ui*/

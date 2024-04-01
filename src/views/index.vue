@@ -6,6 +6,7 @@
             <i class="el-icon-user-solid icon-message"></i>
             <span class="title">联系人</span>
           </el-header>
+          <chatGroup />
         </el-aside>
         <el-main >
           <el-header height="40px" >
@@ -13,8 +14,10 @@
             <span class="title">666</span>
           </el-header>
           <span @click="logout">恭喜你，{{this.$store.getters.username}}已经登录，id为 ： {{ this.$store.getters.user_id }}</span>
+          <chatBox />
+          <chatInput />
         </el-main>
-        <footer class="el-footer">
+        <footer class="footer">
           <a href="localhost:8080" target="_blank">sea sugar</a> &copy; 2024
         </footer>
       </el-container>
@@ -22,11 +25,19 @@
 </template>
 
 <script>
+import chatGroup from '@/components/chatGroup.vue';
+import chatBox from '@/components/chatBox.vue';
+import chatInput from '@/components/chatInput.vue';
 export default {
   data() {
     return {
       
     };
+  },
+  components: {
+    chatGroup,
+    chatBox,
+    chatInput
   },
   methods: {
     logout(){
@@ -42,7 +53,7 @@ export default {
 
 <style lang="scss" scoped>
 .container{
-  height: 100vh;
+  // height: 100vh;
   background-image: url('/public/bgc.png');
   background-size: cover;
   background-repeat: no-repeat;
@@ -89,7 +100,7 @@ export default {
       }
     }
   }
-  .el-footer {
+  .footer {
     position: absolute;
     bottom: -23px;
     right: 0;

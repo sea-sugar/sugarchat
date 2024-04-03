@@ -39,6 +39,9 @@ export default {
     chatBox,
     chatInput
   },
+  mounted(){
+    this.$store.dispatch("startWebSocket");
+  },
   methods: {
     logout(){
       this.$store.dispatch('LogOut').then(() => {

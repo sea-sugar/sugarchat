@@ -17,10 +17,10 @@ const webSocket = {
   actions : {
     startWebSocket({commit, dispatch, state}) {
       if (getToken() && (!state.ws || state.ws.disconnected)) {
-        const socketUrl = `${process.env.VUE_APP_SOCKET_PATH}`;
+        const socketUrl = `${process.env.VUE_APP_SOCKET_PATH}?token=${getToken()}`;
         // const socketUrl = `http://localhost:3000?token=${getToken()}`;
-        console.log("socketUrl:", socketUrl,"  ws:",ws);
         const ws = new io(socketUrl);
+        // console.log("socketUrl:", socketUrl,"  ws:",ws);
         ws.on('message', function (data) {
           console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${data}`, state.ws);
         });
@@ -30,7 +30,11 @@ const webSocket = {
           // 尝试重新连接
           dispatch('reconnectWebSocket');
         });
-  
+        // 监听 'authError' 消息
+        ws.on('authError', (data) => {
+          console.log('Authentication Error:', data.message);
+          // 在这里进行相应的处理，比如提示用户认证失败等操作
+        });
         ws.on('connect', function () {
           console.log(`${new Date().toLocaleString()} >>>>> 连接成功`, ws);
           // 保存 WebSocket 连接信息
@@ -41,6 +45,7 @@ const webSocket = {
         ws.on('error', function (e) {
           console.log(`${new Date().toLocaleString()} >>>>> 数据传输发生异常`, e);
         });
+
       }
     },
   

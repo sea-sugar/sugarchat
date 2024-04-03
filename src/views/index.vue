@@ -28,6 +28,7 @@
 import chatGroup from '@/components/chatGroup.vue';
 import chatBox from '@/components/chatBox.vue';
 import chatInput from '@/components/chatInput.vue';
+import store from '@/store';
 export default {
   data() {
     return {
@@ -41,6 +42,9 @@ export default {
   },
   mounted(){
     this.$store.dispatch("startWebSocket");
+  },
+  destroyed(){
+    this.$store.dispatch("clearWebSocket");
   },
   methods: {
     logout(){

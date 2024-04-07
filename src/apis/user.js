@@ -36,4 +36,11 @@ export function register(data) {
     })
 }
 
+export function getList() {
+  return request({
+    url: '/user/getList',
+    method: 'get',
+  })
+}
+
 // params: query

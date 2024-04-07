@@ -7,18 +7,18 @@
   
       <ul class="message-styles-box">
         <li
-          v-for="(item, index) in 6"
-          class="message-layout-right">
+          v-for="(item, index) in messages"
+          :class="{'message-layout-right': item.sender_id == $store.getters.user_id , 'message-layout-left' : item.sender_id !== $store.getters.user_id }">
   
           <img class="message-avatar"
             :src="item.avatar ? item.avatar : '/bgc.png'"
             :alt="item.nickName ? item.nickName : '我是憨批'">
   
           <!-- <p class="message-nickname">sea 发送time</p> -->
-          <p class="message-nickname" >接收time sugar</p>
-          <p class="message-classic" >内容</p>
+          <p class="message-nickname" >{{ item.sender_id }}</p>
+          <p class="message-classic" >{{item.content}}</p>
         </li>
-        <li
+        <!-- <li
           v-for="(item, index) in 2"
           class="message-layout-left">
   
@@ -27,23 +27,64 @@
             :alt="item.nickName ? item.nickName : '我是憨批'">
   
           <p class="message-nickname">sea 发送time</p>
-          <!-- <p class="message-nickname" >接收time sugar</p> -->
+           <p class="message-nickname" >接收time sugar</p> 
           <p class="message-classic" >内容</p>
-        </li>
+        </li> -->
       </ul>
     </div>
 </template>
 
 <script>
+import { getMessage } from '../apis/msg';
 export default {
     name : 'chatBox',
+    props: {
+      nowchat: {
+        type: Object
+      }
+    },
     data(){
         return {
+          messages:[],
 
         }
     },
+    mounted(){
+      this.getMessage()
+    },
+    computed:{
+      isNewChat(){
+        return this.nowchat
+      }
+    },
+    watch: {
+      isNewChat: {
+        immediate: true,
+        handler(newVal, oldVal) {
+          this.getMessage();
+        }
+      }
+    },
     methods:{
+      getMessage(){
+        if (this.nowchat.user_id !== undefined ) {
+          getMessage(this.nowchat.user_id,'').then(res =>{
+            console.log(res);
+            this.messages = res.data.messages
+          }).catch(err =>{
+            console.log(err);
+          })
+        }
+        else{
+          getMessage('',this.nowchat.group_id).then(res =>{
+            console.log(res);
+            this.messages = res.data.messages
+          }).catch(err =>{
+            console.log(err);
+          })
+        }
         
+      }
     }
 
 }

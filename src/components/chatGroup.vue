@@ -1,7 +1,9 @@
 <template>
     <ul class="group">
-        <li v-for="(item , index) in 6"
-        :class="['item-list',{'item-active' : item.active}]" >
+        <li v-for="(item , index) in List"
+        :class="['item-list',{'item-active' : item.active}]" 
+        @click="switchGroup(item)"
+        >
             <div class="group-left">
                 <el-badge
                 class="badge"
@@ -13,7 +15,7 @@
             
             <div class="group-right">
                 <div class="group-header">
-                    <div class="group-title">sea</div>
+                    <div class="group-title">{{item.username ? item.username : item.group_name}}</div>
                     <div class="group-time">time</div>
                 </div>
                 <div class="group-content">123</div>
@@ -23,6 +25,7 @@
 </template>
 
 <script>
+import { getList } from '../apis/user';
 export default {
   name:'chatGroup',
   props:{ 
@@ -31,10 +34,42 @@ export default {
   data() {
     return{
       a:1,
+      List:[],
+      loading:false,
     }
   },
   methods:{
+    getList(){
+      this.List = [] 
+      getList().then(res =>{
+        console.log(res);
+        this.List.push(...res.data.friendInfo);
+        this.List.push(...res.data.groupInfo);
+        this.List.map(item => {
+          item.active = false
+        })
+      }).catch(err =>{
+        console.log(err);
+      })
+    },
+    switchGroup(item){
+      if (this.loading) {
+        return 
+      }
+      this.loading = true
+      this.List.map(item => {
+        item.active = false
+      })
+      item.active = true
+      this.$forceUpdate()
+      this.$emit('switchGroup',item)
+      console.log(456);
+      this.loading = false
+    }
 
+  },
+  mounted(){
+    this.getList();
   }
 }
 </script>

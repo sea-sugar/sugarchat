@@ -6,7 +6,8 @@
             <i class="el-icon-user-solid icon-message"></i>
             <span class="title">联系人</span>
           </el-header>
-          <chatGroup />
+          <chatGroup 
+          @switchGroup="switchGroup"/>
         </el-aside>
         <el-main >
           <el-header height="40px" >
@@ -14,7 +15,8 @@
             <span class="title">666</span>
           </el-header>
           <span @click="logout">恭喜你，{{this.$store.getters.username}}已经登录，id为 ： {{ this.$store.getters.user_id }}</span>
-          <chatBox />
+          <chatBox 
+          :nowchat="nowchat"/>
           <chatInput />
         </el-main>
         <footer class="footer">
@@ -32,7 +34,19 @@ import store from '@/store';
 export default {
   data() {
     return {
-      
+      nowchat:{
+        // user_id:'test',
+        // username:'test',
+        // user_avatar:'1',
+        // active:true,
+
+        group_id:1,
+        group_name:'123',
+        group_avatar:'123',
+        own_id:'123',
+        description:'123',
+        active:true,
+      },
     };
   },
   components: {
@@ -53,6 +67,10 @@ export default {
         }).catch(err =>{
         console.log(err);
       })
+    },
+    switchGroup(item){
+      console.log("聊天对象已经切换至 ",item);
+      this.nowchat = item 
     }
   }
 };

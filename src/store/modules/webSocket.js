@@ -19,32 +19,36 @@ const webSocket = {
       if (getToken() && (!state.ws || state.ws.disconnected)) {
         const socketUrl = `${process.env.VUE_APP_SOCKET_PATH}?token=${getToken()}`;
         // const socketUrl = `http://localhost:3000?token=${getToken()}`;
-        const ws = new io(socketUrl);
-        // console.log("socketUrl:", socketUrl,"  ws:",ws);
-        ws.on('message', function (data) {
-          console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${data}`, state.ws);
-        });
-  
-        ws.on('disconnect', function () {
-          console.log(`${new Date().toLocaleString()} >>>>> 连接已关闭`);
-          // 尝试重新连接
-          dispatch('reconnectWebSocket');
-        });
-        // 监听 'authError' 消息
-        ws.on('authError', (data) => {
-          console.log('Authentication Error:', data.message);
-          // 在这里进行相应的处理，比如提示用户认证失败等操作
-        });
-        ws.on('connect', function () {
-          console.log(`${new Date().toLocaleString()} >>>>> 连接成功`, ws);
-          // 保存 WebSocket 连接信息
-          commit('SET_WS', ws);
-          // // 在这里调用 sendWebSocketMessage，确保 state.ws 已经被正确设置
-        });
-  
-        ws.on('error', function (e) {
-          console.log(`${new Date().toLocaleString()} >>>>> 数据传输发生异常`, e);
-        });
+        try {
+          const ws = new io(socketUrl);
+          // console.log("socketUrl:", socketUrl,"  ws:",ws);
+          ws.on('message', function (data) {
+            console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${data}`, state.ws);
+          });
+    
+          ws.on('disconnect', function () {
+            console.log(`${new Date().toLocaleString()} >>>>> 连接已关闭`);
+            // 尝试重新连接
+            dispatch('reconnectWebSocket');
+          });
+          // 监听 'authError' 消息
+          ws.on('authError', (data) => {
+            console.log('Authentication Error:', data.message);
+            // 在这里进行相应的处理，比如提示用户认证失败等操作
+          });
+          ws.on('connect', function () {
+            console.log(`${new Date().toLocaleString()} >>>>> 连接成功`, ws);
+            // 保存 WebSocket 连接信息
+            commit('SET_WS', ws);
+            // // 在这里调用 sendWebSocketMessage，确保 state.ws 已经被正确设置
+          });
+    
+          ws.on('error', function (e) {
+            console.log(`${new Date().toLocaleString()} >>>>> 数据传输发生异常`, e);
+          });
+        } catch (error) {
+          console.error('WebSocket连接失败：', error);
+        }
 
       }
     },

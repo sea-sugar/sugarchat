@@ -20,7 +20,8 @@
         <el-button
           size="mini"
           type="primary"
-          class="send-button">
+          class="send-button"
+          @click="sendMessage">
           发送/Send
         </el-button>
       </div>
@@ -30,13 +31,39 @@
 <script>
 export default {
     name : "chatInput",
+    props: {
+      nowchat: {
+        type: Object
+      }
+    },
     data(){
         return{
             textArea:'',
         }
     },
     methods:{
-        
+      sendMessage(){
+        console.log("发送消息：",this.textArea);
+        if (this.blankTesting()) {
+          this.$store.dispatch('sendMessage',{nowchat : this.nowchat,message : this.textArea})
+        }
+        this.textArea = ''
+      },
+
+      // 消息过滤
+      // textAreaTran () {
+      //   return this.textArea.replace(/\n/g, '').replace(new RegExp('<', 'gm'), '&lt')
+      // },
+      // 检测空白
+      blankTesting () {
+        if (this.textArea.replace(/\s+/g, '') === '') {
+          this.$alert('不能发送空白消息', '提示', {
+            confirmButtonText: '确定'
+          })
+          return false
+        }
+        return true
+      },
     }
 }
 </script>

@@ -17,7 +17,8 @@
           <span @click="logout">恭喜你，{{this.$store.getters.username}}已经登录，id为 ： {{ this.$store.getters.user_id }}</span>
           <chatBox 
           :nowchat="nowchat"/>
-          <chatInput />
+          <chatInput 
+          :nowchat="nowchat"/>
         </el-main>
         <footer class="footer">
           <a href="localhost:8080" target="_blank">sea sugar</a> &copy; 2024

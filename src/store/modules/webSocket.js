@@ -40,12 +40,16 @@ const webSocket = {
             console.log(`${new Date().toLocaleString()} >>>>> 连接成功`, ws);
             // 保存 WebSocket 连接信息
             commit('SET_WS', ws);
-            // // 在这里调用 sendWebSocketMessage，确保 state.ws 已经被正确设置
+            // // 在这里调用 sendMessage，确保 state.ws 已经被正确设置
           });
     
           ws.on('error', function (e) {
             console.log(`${new Date().toLocaleString()} >>>>> 数据传输发生异常`, e);
           });
+
+          ws.on('receiveMessage',function (data) {
+            console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${(JSON.stringify(data))}`, state.ws);
+          })
         } catch (error) {
           console.error('WebSocket连接失败：', error);
         }
@@ -53,9 +57,25 @@ const webSocket = {
       }
     },
   
-    sendWebSocketMessage({state}, msg) {
-      console.log(`${new Date().toLocaleString()} >>>>> 发送消息：${msg}`, state.ws);
-      state.ws.send(msg);
+    sendMessage({state,rootState },{nowchat, message}) {
+      console.log(`${new Date().toLocaleString()} >>>>> 发送消息：${message}`, state.ws);
+      let data = null ;
+      if (nowchat.user_id) { //私聊
+        data = {
+          sender_id: rootState.user.user_id,
+          receiver_id: nowchat.user_id, // 如果是私聊
+          content: message,
+          type: 'text',
+        };
+      } else {
+        data = {
+          sender_id: rootState.user.user_id,
+          group_id: nowchat.group_id, // 如果是群聊
+          content: message,
+          type: 'text',
+        };
+      }
+      state.ws.emit('sendMessage',data);
     },
   
     reconnectWebSocket({dispatch}) {

@@ -48,6 +48,8 @@ export default {
         this.List.map(item => {
           item.active = false
         })
+        this.List[0].active = true 
+        this.$store.commit('SET_NOWCHAT',this.List[0])
       }).catch(err =>{
         console.log(err);
       })

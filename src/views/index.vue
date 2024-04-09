@@ -11,8 +11,8 @@
         </el-aside>
         <el-main >
           <el-header height="40px" >
-            <span class="title">聊天室(0)人</span>
-            <span class="title">666</span>
+            <span class="title">{{nowchat.username ? nowchat.username : nowchat.group_name}}</span>
+            <span class="title" v-if="nowchat.group_name">(666)人</span>
           </el-header>
           <span @click="logout">恭喜你，{{this.$store.getters.username}}已经登录，id为 ： {{ this.$store.getters.user_id }}</span>
           <chatBox 

@@ -72,6 +72,7 @@ const webSocket = {
       }
     },
     receiveMessage({state,rootState,commit},data){
+      console.log(data,6666666666);
       if(data.group_id == state.nowchat.group_id){//接收群聊消息
         commit('SET_MESSAGE',data)
       }else if(data.receiver_id == rootState.user.user_id){//接收私聊消息

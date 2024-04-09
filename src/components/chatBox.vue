@@ -11,11 +11,16 @@
           :class="{'message-layout-right': item.sender_id == $store.getters.user_id , 'message-layout-left' : item.sender_id !== $store.getters.user_id }">
   
           <img class="message-avatar"
-            :src="item.avatar ? item.avatar : '/bgc.png'"
-            :alt="item.nickName ? item.nickName : '我是憨批'">
-  
+            v-if="item.receiver_id!==null"
+            :src="item.sender_id == $store.getters.user_id ? item.sender.user_avatar : item.receiver.user_avatar"
+            :alt="item.sender_id == $store.getters.user_id ? item.sender.username : item.receiver.username">
+          <img class="message-avatar"
+            v-else
+            :src="item.sender.user_avatar"
+            :alt="item.sender.user_avatar">
           <!-- <p class="message-nickname">sea 发送time</p> -->
-          <p class="message-nickname" >{{ item.sender_id }}</p>
+
+          <p class="message-nickname" >{{ item.sender.username}} {{ formatTime(item.send_time) }}</p>
           <p class="message-classic" >{{item.content}}</p>
         </li>
         <!-- <li
@@ -71,8 +76,8 @@ export default {
         handler(newVal,oldVal) {
           if(newVal){
             this.messages.push(newVal)
+            this.gotoBottom()
           }
-          console.log(this.messages,123132);
         }
       }
     },
@@ -88,13 +93,48 @@ export default {
         }
         else{
           getMessage('',this.nowchat.group_id).then(res =>{
-            // console.log(res);
+            console.log(res);
             this.messages = res.data.messages
           }).catch(err =>{
             console.log(err);
           })
         }
         
+      },
+      gotoBottom () {
+        const box = document.getElementsByClassName('message-chat-box')[0]
+        this.$nextTick(() => {
+          box.scrollTop = box.scrollHeight
+        })
+      },
+      formatTime(time) {
+        const date = new Date(time);
+
+        // 获取时间的小时和分钟
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+
+        // 对小时和分钟进行补零处理
+        const formattedHours = hours < 10 ? `0${hours}` : hours;
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+        // 获取当前日期的年月日
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentDay = currentDate.getDate();
+
+        // 获取传入时间的年月日
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+
+        // 如果传入时间与当前时间的年月日相同，则只返回小时和分钟；否则返回完整的日期加上小时和分钟
+        if (year === currentYear && month === currentMonth && day === currentDay) {
+          return `${formattedHours}:${formattedMinutes}`;
+        } else {
+          return `${year}/${month}/${day} ${formattedHours}:${formattedMinutes}`;
+        }
       }
     }
 

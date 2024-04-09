@@ -36,6 +36,7 @@
 
 <script>
 import { getMessage } from '../apis/msg';
+import { mapGetters } from 'vuex';
 export default {
     name : 'chatBox',
     props: {
@@ -55,13 +56,23 @@ export default {
     computed:{
       isNewChat(){
         return this.nowchat
-      }
+      },
+      ...mapGetters(['newmessage']),
     },
     watch: {
       isNewChat: {
         immediate: true,
         handler(newVal, oldVal) {
           this.getMessage();
+        }
+      },
+      newmessage: {
+        deep:true,
+        handler(newVal,oldVal) {
+          if(newVal){
+            this.messages.push(newVal)
+          }
+          console.log(this.messages,123132);
         }
       }
     },
@@ -77,7 +88,7 @@ export default {
         }
         else{
           getMessage('',this.nowchat.group_id).then(res =>{
-            console.log(res);
+            // console.log(res);
             this.messages = res.data.messages
           }).catch(err =>{
             console.log(err);

@@ -4,15 +4,29 @@ import io from 'socket.io-client';
 const webSocket = {
   state : {
     ws: null,
+    nowchat : null,
+    newmessage : null,
   },
   mutations : {
     SET_WS(state, ws) {
       state.ws = ws;
-      console.log("SET_WS", state.ws);
+      // console.log("SET_WS", state.ws);
     },
     CLEAR_WS(state) {
       state.ws = null;
     },
+    SET_NOWCHAT(state , nowchat){
+      state.nowchat = nowchat
+    },
+    CLEAR_NOWCHAT(state){
+      state.nowchat = null;
+    },
+    SET_MESSAGE(state , msg){
+      state.newmessage = msg
+    },
+    CLEAR_MESSAGE(state){
+      state.newmessage = null;
+    }
   },
   actions : {
     startWebSocket({commit, dispatch, state}) {
@@ -49,6 +63,7 @@ const webSocket = {
 
           ws.on('receiveMessage',function (data) {
             console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${(JSON.stringify(data))}`, state.ws);
+            dispatch('receiveMessage',data)
           })
         } catch (error) {
           console.error('WebSocket连接失败：', error);
@@ -56,21 +71,30 @@ const webSocket = {
 
       }
     },
-  
-    sendMessage({state,rootState },{nowchat, message}) {
+    receiveMessage({state,rootState,commit},data){
+      if(data.group_id == state.nowchat.group_id){//接收群聊消息
+        commit('SET_MESSAGE',data)
+      }else if(data.receiver_id == rootState.user.user_id){//接收私聊消息
+        commit('SET_MESSAGE',data)
+      }else{
+        return
+      }
+
+    },
+    sendMessage({state,rootState },message) {
       console.log(`${new Date().toLocaleString()} >>>>> 发送消息：${message}`, state.ws);
       let data = null ;
-      if (nowchat.user_id) { //私聊
+      if (state.nowchat.user_id !== undefined) { //私聊
         data = {
           sender_id: rootState.user.user_id,
-          receiver_id: nowchat.user_id, // 如果是私聊
+          receiver_id: state.nowchat.user_id, // 如果是私聊
           content: message,
           type: 'text',
         };
       } else {
         data = {
           sender_id: rootState.user.user_id,
-          group_id: nowchat.group_id, // 如果是群聊
+          group_id: state.nowchat.group_id, // 如果是群聊
           content: message,
           type: 'text',
         };

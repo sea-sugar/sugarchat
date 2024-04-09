@@ -42,7 +42,7 @@ export default {
     getList(){
       this.List = [] 
       getList().then(res =>{
-        console.log(res);
+        // console.log(res);
         this.List.push(...res.data.friendInfo);
         this.List.push(...res.data.groupInfo);
         this.List.map(item => {
@@ -56,6 +56,9 @@ export default {
       if (this.loading) {
         return 
       }
+      if (item.active) {
+        return
+      }
       this.loading = true
       this.List.map(item => {
         item.active = false
@@ -63,7 +66,7 @@ export default {
       item.active = true
       this.$forceUpdate()
       this.$emit('switchGroup',item)
-      console.log(456);
+      this.$store.commit('SET_NOWCHAT',item)
       this.loading = false
     }
 

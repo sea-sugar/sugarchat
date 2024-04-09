@@ -11,8 +11,10 @@
       <el-input
         type="textarea"
         resize="none"
-        :autosize="{ minRows: 5, maxRows: 5}"
+        :autosize="{ minRows: 5, maxRows: 7}"
         v-model="textArea"
+        @keydown.native.shift.enter="handleShiftEnter"
+        @keydown.enter.native="handleEnter"
         >
       </el-input>
   
@@ -21,7 +23,8 @@
           size="mini"
           type="primary"
           class="send-button"
-          @click="sendMessage">
+          @click="sendMessage"
+          >
           发送/Send
         </el-button>
       </div>
@@ -44,10 +47,12 @@ export default {
     methods:{
       sendMessage(){
         console.log("发送消息：",this.textArea);
-        if (this.blankTesting()) {
-          this.$store.dispatch('sendMessage',{nowchat : this.nowchat,message : this.textArea})
+        if (this.blankTesting() && this.$store.getters.nowchat != null) {
+          this.$store.dispatch('sendMessage',this.textArea)
+          this.textArea = ''
+          return
         }
-        this.textArea = ''
+        console.log("发送失败");
       },
 
       // 消息过滤
@@ -63,6 +68,27 @@ export default {
           return false
         }
         return true
+      },
+      handleShiftEnter(event) {
+        event.preventDefault(); // 阻止默认行为（不插入换行符）
+
+        const textarea = event.target;
+        const cursorPos = textarea.selectionStart;
+        const textBeforeCursor = this.textArea.substring(0, cursorPos);
+        const textAfterCursor = this.textArea.substring(cursorPos);
+
+        // 更新文本并保持光标位置
+        this.textArea = textBeforeCursor + '\n' + textAfterCursor;
+        const newCursorPos = cursorPos + 1;
+        this.$nextTick(() => {
+          textarea.setSelectionRange(newCursorPos, newCursorPos);
+        });
+      },
+      handleEnter(event){
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault(); // 阻止默认行为（不插入换行符）
+          this.sendMessage();
+        }
       },
     }
 }

@@ -53,7 +53,7 @@ const user = {
           if (res.data.userinfo) { // 判断是否存在用户信息
             commit('SET_TOKEN', res.data.token)
             commit('SET_NAME', res.data.userinfo.username)
-            commit('SET_AVATAR', res.data.userinfo.avatar)
+            commit('SET_AVATAR', res.data.userinfo.user_avatar)
             commit('SET_ID', res.data.userinfo.user_id)
           } else {
             // 用户信息为空，进行相应处理

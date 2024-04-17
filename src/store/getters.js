@@ -5,5 +5,6 @@ const getters = {
     user_id: state => state.user.user_id,
     nowchat: state => state.webSocket.nowchat,
     newmessage: state => state.webSocket.newmessage,
+    avatar: state => state.user.avatar 
   }
   export default getters

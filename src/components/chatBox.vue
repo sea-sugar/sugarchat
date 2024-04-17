@@ -9,15 +9,15 @@
         <li
           v-for="(item, index) in messages"
           :class="{'message-layout-right': item.sender_id == $store.getters.user_id , 'message-layout-left' : item.sender_id !== $store.getters.user_id }">
-  
+   <!-- src="../assets/avatar/1.png" -->
           <img class="message-avatar"
             v-if="item.receiver_id!==null"
-            :src="item.sender_id == $store.getters.user_id ? item.sender.user_avatar : item.receiver.user_avatar"
+            :src="item.sender_id == $store.getters.user_id ? require('../assets/avatar' + item.sender.user_avatar) : require('../assets/avatar' + item.receiver.user_avatar)"
             :alt="item.sender_id == $store.getters.user_id ? item.sender.username : item.receiver.username">
           <img class="message-avatar"
             v-else
-            :src="item.sender.user_avatar"
-            :alt="item.sender.user_avatar">
+            :src="require('../assets/avatar' + item.sender.user_avatar)"
+            :alt="item.sender.user_username">
           <!-- <p class="message-nickname">sea 发送time</p> -->
 
           <p class="message-nickname" >{{ item.sender.username}} {{ formatTime(item.send_time) }}</p>
@@ -177,6 +177,8 @@ export default {
       .message-avatar {
         float: left;
         margin-right: 10px;
+        max-width: 100%;
+        height: auto;
       }
       .message-classic {
         text-align: right ;
@@ -193,6 +195,8 @@ export default {
       .message-avatar {
         float: right;
         margin-left: 10px;
+        max-width: 100%;
+        height: auto;
       }
       .message-classic {
         text-align: left;

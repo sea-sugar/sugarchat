@@ -3,7 +3,11 @@
   
       <el-button
         class="eye-more"
-        type="text">加载更多消息</el-button>
+        type="text"
+        @click="moreMessages"
+        :disabled="loading"
+        v-show="moreMsg"
+        >加载更多消息</el-button>
   
       <ul class="message-styles-box">
         <li
@@ -52,11 +56,14 @@ export default {
     data(){
         return {
           messages:[],
-
+          totalMessages:0,
+          page:1,
+          loading:false,
+          moreMsg:true,
         }
     },
     mounted(){
-      this.getMessage()
+      // this.getMessage()
     },
     computed:{
       isNewChat(){
@@ -68,6 +75,11 @@ export default {
       isNewChat: {
         immediate: true,
         handler(newVal, oldVal) {
+          this.totalMessages = 0
+          this.page = 1
+          this.loading = false
+          this.moreMsg = true
+          this.messages = []
           this.getMessage();
         }
       },
@@ -82,25 +94,56 @@ export default {
       }
     },
     methods:{
-      getMessage(){
+      getMessage(page = 1){
+        this.loading = true
+        if (this.totalMessages !== 0) {
+          const totalPages = Math.ceil(this.totalMessages / 10);
+          console.log(page,totalPages);
+          if (page > totalPages) {
+            this.moreMsg = false
+            this.loading = false
+            return
+          }
+        }
         if (this.nowchat.user_id !== undefined ) {
-          getMessage(this.nowchat.user_id,'').then(res =>{
+          getMessage(this.nowchat.user_id,'',page).then(res =>{
             console.log(res);
-            this.messages = res.data.messages
+            this.totalMessages = res.data.totalMessages
+            this.messages.unshift(...res.data.messages) 
           }).catch(err =>{
             console.log(err);
           })
         }
         else{
-          getMessage('',this.nowchat.group_id).then(res =>{
+          getMessage('',this.nowchat.group_id,page).then(res =>{
             console.log(res);
-            this.messages = res.data.messages
+            this.totalMessages = res.data.totalMessages
+            this.messages.unshift(...res.data.messages) 
           }).catch(err =>{
             console.log(err);
           })
         }
-        
+        this.loading = false
       },
+      async moreMessages() {
+        // 获取当前滚动位置
+        const box = document.getElementsByClassName('message-chat-box')[0];
+        const scrollTopBeforeLoad = box.scrollTop;
+
+        // 加载更多消息
+        this.page = this.page + 1;
+        await this.getMessage(this.page);
+
+        // 等待加载更多消息完成后,平滑滚动到之前的位置
+        this.$nextTick(() => {
+          const scrollPosition = box.scrollHeight - box.offsetHeight + scrollTopBeforeLoad;
+          box.scrollTo({
+            top: scrollPosition,
+            // behavior: 'smooth'
+          });
+        });
+      },
+
       gotoBottom () {
         const box = document.getElementsByClassName('message-chat-box')[0]
         this.$nextTick(() => {

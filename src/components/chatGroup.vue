@@ -9,7 +9,8 @@
                 class="badge"
                 :max="99"
                 >
-                <img src="/bgc.png" alt="头像" class="group-avatar">
+                <img :src="item.user_avatar != undefined ? require(`../assets/avatar${item.user_avatar}`) : require(`../assets/avatar${item.group_avatar}`)" 
+                :alt="item.username != undefined ? item.username : item.group_name"  class="group-avatar">
                 </el-badge>
             </div>
             
@@ -21,7 +22,10 @@
                 <div class="group-content">123</div>
             </div>
         </li>
-        <div class="userinfo" @click="openUserinfo=true">个人中心</div>
+        <div class="userinfo" @click="openUserinfo=true">
+          <el-image :src="require(`../assets/avatar${this.$store.getters.avatar}`)"  lazy  style="width: auto; height: 50px; border-radius: 70%;" ></el-image>
+          {{this.$store.getters.username}} 欢迎回家！
+        </div>
         <el-dialog
           title="个人中心"
           :visible.sync="openUserinfo"
@@ -29,12 +33,12 @@
           :append-to-body="true"
           >
           <!-- <span>这是一段信息</span> -->
-          <el-form  label-width="80px" class="userInfoForm">
-            <el-form-item label="我的昵称">
-              <el-input></el-input>
+          <el-form :model="userInfoForm" :rules="userInfoFormRule" ref="userInfoFormRef" label-width="80px" class="userInfoForm">
+            <el-form-item prop="username" label="我的昵称">
+              <el-input v-model="userInfoForm.username" placeholder="取个好听的名字吧"></el-input>
             </el-form-item>
-            <el-form-item label="我的头像">
-              <el-image :src=avatarPath @click="changeAvatar" lazy  style="width: auto; height: 200px" ></el-image>
+            <el-form-item prop="avatar" label="我的头像">
+              <el-image v-model="userInfoForm.avatar" :src=avatarPath @click="changeAvatar" lazy  style="width: auto; height: 200px" ></el-image>
             </el-form-item>
             <!-- <el-form-item label="即时配送">
               <el-switch v-model="form.delivery"></el-switch>
@@ -72,7 +76,9 @@
 </template>
 
 <script>
-import { getList } from '../apis/user';
+import { getList , updateUserinfo} from '../apis/user';
+import { mapGetters } from 'vuex';
+import { setToken } from '../utils/auth';
 export default {
   name:'chatGroup',
   props:{ 
@@ -84,16 +90,27 @@ export default {
       List:[],
       loading:false,
       openUserinfo:false,
-      avatarTemp: 0 ,
+      avatarTemp: 0,
+      userInfoForm:{
+        username:'',
+        avatar:'',
+      },
+      userInfoFormRule:{
+        username: [{required: true, message: '不能为空', trigger: 'blur'},{ pattern: /^[a-zA-Z0-9\u4E00-\u9FA5]+$/, message: '用户名只能包含中文、数字和字母', trigger: 'blur' }],
+        avatar:[],
+      },
     }
   },
   computed:{
     avatarPath(){
       return this.avatarTemp == 0 ? require(`../assets/avatar${this.$store.getters.avatar}`) : require(`../assets/avatar/${this.avatarTemp}.png`);
-    }
+    },
+    ...mapGetters(['username','avatar']),
   },
   mounted(){
     this.getList();
+    this.userInfoForm.username = this.username
+    this.userInfoForm.avatar = this.avatar
   },
   methods:{
     getList(){
@@ -137,10 +154,29 @@ export default {
     },
     changeAvatar(){
       this.avatarTemp = Math.floor(Math.random() * 19) + 1;
+      this.userInfoForm.avatar = `/${this.avatarTemp}.png`
     },
     submitUserInfoForm(){
-      console.log("提交个人信息");
-      this.openUserinfo = false
+      this.$refs['userInfoFormRef'].validate((valid) => {
+        if(valid){
+          console.log("提交个人信息",this.userInfoForm);
+          updateUserinfo(this.userInfoForm).then(res =>{
+            console.log(res);
+            if (res.data.userinfo) { // 判断是否存在用户信息
+              setToken(res.data.token)
+              this.$store.commit('SET_TOKEN', res.data.token)
+              this.$store.commit('SET_NAME', res.data.userinfo.username)
+              this.$store.commit('SET_AVATAR', res.data.userinfo.user_avatar)
+              this.$store.commit('SET_ID', res.data.userinfo.user_id)
+            }
+          })
+          this.openUserinfo = false
+        }
+        else{
+          console.log("表单不全");
+        }
+      })
+      
     },
   },
 }
@@ -200,6 +236,9 @@ export default {
       }
     }
     .userinfo{
+      display: flex;
+      align-items: center;
+      justify-content:space-around;
       position: absolute;
       width: 100%;
       height: 60px;

@@ -43,4 +43,15 @@ export function getList() {
   })
 }
 
+export function updateUserinfo(userinfoForm) {
+  return request({
+    url: '/user/updateUserinfo',
+    method: 'post',
+    data:{
+      username:userinfoForm.username,
+      avatar:userinfoForm.avatar
+    }
+  })
+}
+
 // params: query

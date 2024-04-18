@@ -77,8 +77,10 @@
 
 <script>
 import { getList , updateUserinfo} from '../apis/user';
+import { getLastMessage } from '../apis/msg';
 import { mapGetters } from 'vuex';
 import { setToken } from '../utils/auth';
+import { EventBus } from '../utils/EventBus'; //兄弟组件通讯
 export default {
   name:'chatGroup',
   props:{ 
@@ -107,6 +109,12 @@ export default {
     },
     ...mapGetters(['username','avatar']),
   },
+  created() {
+    EventBus.$on('message-from-component-chatBox', this.handleMessage);
+  },
+  beforeDestroy() {
+    EventBus.$off('message-from-component-chatBox', this.handleMessage);
+  },
   mounted(){
     this.getList();
     this.userInfoForm.username = this.username
@@ -124,9 +132,28 @@ export default {
         })
         this.List[0].active = true 
         this.$store.commit('SET_NOWCHAT',this.List[0])
+        this.getLastMessage()
       }).catch(err =>{
         console.log(err);
       })
+    },
+    getLastMessage(){
+      for (let i = 0; i < this.List.length; i++) {
+        if (this.List[i].user_id !== undefined) {
+          getLastMessage(this.List[i].user_id,'').then(res =>{
+            console.log(res);
+            this.List[i] = {...this.List[i], ...res.data.message}
+          }).catch(err =>{
+            console.log(err);
+          })
+        } else {
+          getLastMessage(this.List[i].group_id,'').then(res =>{
+            console.log(res);
+          }).catch(err =>{
+            console.log(err);
+          })
+        }
+      }
     },
     switchGroup(item){
       if (this.loading) {
@@ -177,6 +204,9 @@ export default {
         }
       })
       
+    },
+    handleMessage(message) {
+      console.log("receive...",message);
     },
   },
 }

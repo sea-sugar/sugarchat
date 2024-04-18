@@ -40,12 +40,14 @@
           <p class="message-classic" >内容</p>
         </li> -->
       </ul>
+      <button @click="sendMessage">发送消息到chatGroup</button>
     </div>
 </template>
 
 <script>
 import { getMessage } from '../apis/msg';
 import { mapGetters } from 'vuex';
+import { EventBus } from '../utils/EventBus';
 export default {
     name : 'chatBox',
     props: {
@@ -64,6 +66,9 @@ export default {
     },
     mounted(){
       // this.getMessage()
+    },
+    beforeDestroy() {
+      EventBus.$off('message-from-component-chatBox');
     },
     computed:{
       isNewChat(){
@@ -178,7 +183,11 @@ export default {
         } else {
           return `${year}/${month}/${day} ${formattedHours}:${formattedMinutes}`;
         }
-      }
+      },
+      sendMessage() {
+        EventBus.$emit('message-from-component-chatBox', 'Hello from chatBox');
+        console.log("send...");
+      },
     }
 
 }

@@ -11,3 +11,14 @@ export function getMessage(receiverId = '',groupId = '',page = 1) {
       }
     })
   }
+
+ export function getLastMessage(receiverId = '',groupId = '') {
+    return request({
+      url: '/msg/getLastMessage',
+      method: 'get',
+      params:{
+        receiverId:receiverId,
+        groupId:groupId,
+      }
+    })
+  }

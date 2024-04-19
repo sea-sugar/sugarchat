@@ -17,9 +17,10 @@
             <div class="group-right">
                 <div class="group-header">
                     <div class="group-title">{{item.username ? item.username : item.group_name}}</div>
-                    <div class="group-time">time</div>
+                    <!-- <div class="group-time">{{item.lastMessage.send_time}}</div> -->
+                    <div class="group-time">{{item.lastMessage?.send_time !== undefined ?  formatTimeGroup(item.lastMessage.send_time) : 'time'}}</div>
                 </div>
-                <div class="group-content">123</div>
+                <div class="group-content">{{item.lastMessage?.content !== undefined ?  item.lastMessage.content : 'content'}}</div>
             </div>
         </li>
         <div class="userinfo" @click="openUserinfo=true">
@@ -80,6 +81,7 @@ import { getList , updateUserinfo} from '../apis/user';
 import { getLastMessage } from '../apis/msg';
 import { mapGetters } from 'vuex';
 import { setToken } from '../utils/auth';
+import { formatTimeGroup } from '../utils/tools';
 import { EventBus } from '../utils/EventBus'; //兄弟组件通讯
 export default {
   name:'chatGroup',
@@ -119,11 +121,13 @@ export default {
     this.getList();
     this.userInfoForm.username = this.username
     this.userInfoForm.avatar = this.avatar
+    console.log(this.List);
   },
   methods:{
+    formatTimeGroup,
     getList(){
       this.List = [] 
-      getList().then(res =>{
+      getList().then(async res =>{
         // console.log(res);
         this.List.push(...res.data.friendInfo);
         this.List.push(...res.data.groupInfo);
@@ -132,28 +136,29 @@ export default {
         })
         this.List[0].active = true 
         this.$store.commit('SET_NOWCHAT',this.List[0])
-        this.getLastMessage()
+        await this.getLastMessage()
       }).catch(err =>{
         console.log(err);
       })
     },
     getLastMessage(){
+      const promises = [];
       for (let i = 0; i < this.List.length; i++) {
         if (this.List[i].user_id !== undefined) {
-          getLastMessage(this.List[i].user_id,'').then(res =>{
-            console.log(res);
-            this.List[i] = {...this.List[i], ...res.data.message}
-          }).catch(err =>{
-            console.log(err);
-          })
+          promises.push(getLastMessage(this.List[i].user_id, ''));
         } else {
-          getLastMessage(this.List[i].group_id,'').then(res =>{
-            console.log(res);
-          }).catch(err =>{
-            console.log(err);
-          })
+          promises.push(getLastMessage('', this.List[i].group_id));
         }
       }
+      Promise.all(promises).then(responses => {
+        responses.forEach((res, i) => {
+          // this.List[i] = { ...this.List[i], lastMessage: { ...res.data.message } }; 错误的写法
+          this.$set(this.List[i], 'lastMessage', res.data.message);
+        });
+        console.log("获取lastMessage success");
+      }).catch(err => {
+        console.log(err);
+      });
     },
     switchGroup(item){
       if (this.loading) {

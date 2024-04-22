@@ -72,14 +72,25 @@ const webSocket = {
       }
     },
     receiveMessage({state,rootState,commit},data){
-      console.log(data,6666666666);
-      if(data.group_id == state.nowchat.group_id){//接收群聊消息
-        commit('SET_MESSAGE',data)
-      }else if(data.receiver_id == rootState.user.user_id){//接收私聊消息
-        commit('SET_MESSAGE',data)
-      }else{
-        return
+      console.log(data);
+      for (let i = 0; i < rootState.user.list.length; i++) {
+        if(data.group_id == rootState.user.list[i].group_id || data.receiver_id == rootState.user.user_id ){
+          if (data.group_id == rootState.user.list[i].group_id) {
+            console.log("接收群聊消息");
+          }
+          else if(data.receiver_id == rootState.user.user_id){
+            console.log("接收私聊消息");
+          }
+          commit('SET_MESSAGE',data)
+        }
       }
+      // if(data.group_id == state.nowchat.group_id){//接收群聊消息
+      //   commit('SET_MESSAGE',data)
+      // }else if(data.receiver_id == rootState.user.user_id){//接收私聊消息
+      //   commit('SET_MESSAGE',data)
+      // }else{
+      //   return
+      // }
 
     },
     sendMessage({state,rootState },message) {

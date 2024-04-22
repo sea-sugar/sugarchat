@@ -7,6 +7,7 @@ const user = {
     username: '',
     avatar: '',
     user_id: '',
+    list:[],
   },
 
   mutations: {
@@ -21,7 +22,10 @@ const user = {
     },
     SET_ID: (state, id) => {
         state.user_id = id
-      },
+    },
+    SET_LIST: (state, list) => {
+      state.list = list
+    },
   },
 
   actions: {

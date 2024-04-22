@@ -13,6 +13,8 @@
                 :alt="item.username != undefined ? item.username : item.group_name"  class="group-avatar">
                 </el-badge>
             </div>
+            <!-- 新消息提醒红点 -->
+            <div class="new-message-dot" v-if="item.hasNewMessage"></div>
             
             <div class="group-right">
                 <div class="group-header">
@@ -83,6 +85,7 @@ import { mapGetters } from 'vuex';
 import { setToken } from '../utils/auth';
 import { formatTimeGroup } from '../utils/tools';
 import { EventBus } from '../utils/EventBus'; //兄弟组件通讯
+import store from '@/store';
 export default {
   name:'chatGroup',
   props:{ 
@@ -131,10 +134,12 @@ export default {
         // console.log(res);
         this.List.push(...res.data.friendInfo);
         this.List.push(...res.data.groupInfo);
+        this.$store.commit('SET_LIST',this.List)
         this.List.map(item => {
           item.active = false
         })
         this.List[0].active = true 
+        this.$emit('switchGroup',this.List[0])
         this.$store.commit('SET_NOWCHAT',this.List[0])
         await this.getLastMessage()
       }).catch(err =>{
@@ -167,6 +172,7 @@ export default {
       if (item.active) {
         return
       }
+      item.hasNewMessage = false
       this.loading = true
       this.List.map(item => {
         item.active = false
@@ -210,8 +216,20 @@ export default {
       })
       
     },
-    handleMessage(message) {
-      console.log("receive...",message);
+    handleMessage(newmsg) {
+      console.log("receive...",newmsg);
+      for (let i = 0; i < this.List.length; i++) {
+        if (this.List[i].user_id == newmsg.sender_id && newmsg.group_id == null) {
+          this.$set(this.List[i],'hasNewMessage',true)
+          this.$set(this.List[i],'lastMessage',newmsg)
+          break
+        }
+        else if(this.List[i].group_id == newmsg.group_id && newmsg.receiver_id == null && this.$store.state.webSocket.nowchat.group_id != newmsg.group_id ){
+          this.$set(this.List[i],'hasNewMessage',true)
+          this.$set(this.List[i],'lastMessage',newmsg)
+          break
+        }
+      }
     },
   },
 }
@@ -288,5 +306,14 @@ export default {
       align-items: center; 
       justify-content: center;
     }
+    .new-message-dot {
+      position: absolute;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
 }
 </style>

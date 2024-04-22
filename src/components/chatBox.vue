@@ -40,7 +40,7 @@
           <p class="message-classic" >内容</p>
         </li> -->
       </ul>
-      <button @click="sendMessage">发送消息到chatGroup</button>
+      <!-- <button @click="sendMessage">发送消息到chatGroup</button> -->
     </div>
 </template>
 
@@ -93,8 +93,19 @@ export default {
         deep:true,
         handler(newVal,oldVal) {
           if(newVal){
-            this.messages.push(newVal)
-            this.gotoBottom()
+            if(newVal.group_id == nowchat.group_id){//接收群聊消息
+              this.messages.push(newVal)
+              this.messages.shift()
+              this.gotoBottom()
+            }else if(newVal.receiver_id == nowchat.user_id){//接收私聊消息
+              this.messages.push(newVal)
+              this.messages.shift()
+              this.gotoBottom()
+            }else{
+              let temp = newVal
+              this.sendMessage(temp)
+              return
+            }
           }
         }
       }
@@ -134,21 +145,21 @@ export default {
       },
       async moreMessages() {
         // 获取当前滚动位置
-        const box = document.getElementsByClassName('message-chat-box')[0];
-        const scrollTopBeforeLoad = box.scrollTop;
+        // const box = document.getElementsByClassName('message-chat-box')[0];
+        // const scrollTopBeforeLoad = box.scrollTop;
 
         // 加载更多消息
         this.page = this.page + 1;
         await this.getMessage(this.page);
 
         // 等待加载更多消息完成后,平滑滚动到之前的位置
-        this.$nextTick(() => {
-          const scrollPosition = box.scrollHeight - box.offsetHeight + scrollTopBeforeLoad;
-          box.scrollTo({
-            top: scrollPosition,
-            // behavior: 'smooth'
-          });
-        });
+        // this.$nextTick(() => {
+        //   const scrollPosition = box.scrollHeight - box.offsetHeight + scrollTopBeforeLoad;
+        //   box.scrollTo({
+        //     top: scrollPosition,
+        //     // behavior: 'smooth'
+        //   });
+        // });
       },
 
       gotoBottom () {
@@ -157,9 +168,9 @@ export default {
           box.scrollTop = box.scrollHeight
         })
       },
-      sendMessage() {
-        EventBus.$emit('message-from-component-chatBox', 'Hello from chatBox');
-        console.log("send...");
+      sendMessage(newmsg) {
+        EventBus.$emit('message-from-component-chatBox', newmsg);
+        console.log("send...",newmsg);
       },
     }
 

@@ -36,17 +36,17 @@ export default {
   data() {
     return {
       nowchat:{
-        // user_id:'test',
-        // username:'test',
-        // user_avatar:'1',
-        // active:true,
-
-        group_id:1,
-        group_name:'123',
-        group_avatar:'123',
-        own_id:'123',
-        description:'123',
+        user_id:'sea-sugar',
+        username:'sea-sugar',
+        user_avatar:'/1.png',
         active:true,
+
+        // group_id:1,
+        // group_name:'123',
+        // group_avatar:'123',
+        // own_id:'123',
+        // description:'123',
+        // active:true,
       },
     };
   },

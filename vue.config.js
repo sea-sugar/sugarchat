@@ -3,8 +3,9 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     host: '0.0.0.0',
-    port: 8080,
+    port: 80,
     open: true,
+    devtool:'nosources-source-map', //报错时，显示源码所在行列，不展示源码
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
@@ -20,7 +21,7 @@ module.exports = defineConfig({
       //   logLevel: 'debug',
       // },
       // ['/health-api']:{
-      //   target:"https://test.health.huayimt.com",
+      //   target:"http://localhost:8081",
       //   changeOrigin: true,
       //   pathRewrite: {
       //     '^/health-api': '',

@@ -93,11 +93,11 @@ export default {
         deep:true,
         handler(newVal,oldVal) {
           if(newVal){
-            if(newVal.group_id == nowchat.group_id){//接收群聊消息
+            if(newVal.group_id == this.nowchat.group_id){//接收群聊消息
               this.messages.push(newVal)
               this.messages.shift()
               this.gotoBottom()
-            }else if(newVal.receiver_id == nowchat.user_id){//接收私聊消息
+            }else if(newVal.receiver_id == this.nowchat.user_id){//接收私聊消息
               this.messages.push(newVal)
               this.messages.shift()
               this.gotoBottom()

@@ -71,6 +71,7 @@
 
           </el-form>
           <span slot="footer" class="dialog-footer">
+            <el-button @click="logout" style="float: left;">退出登录</el-button>
             <el-button @click="openUserinfo = false">取 消</el-button>
             <el-button type="primary" @click="submitUserInfoForm">确 定</el-button>
           </span>
@@ -85,7 +86,7 @@ import { mapGetters } from 'vuex';
 import { setToken } from '../utils/auth';
 import { formatTimeGroup } from '../utils/tools';
 import { EventBus } from '../utils/EventBus'; //兄弟组件通讯
-import store from '@/store';
+import { Notification} from 'element-ui'
 export default {
   name:'chatGroup',
   props:{ 
@@ -134,6 +135,7 @@ export default {
         // console.log(res);
         this.List.push(...res.data.friendInfo);
         this.List.push(...res.data.groupInfo);
+        this.$emit('getList',this.List)
         this.$store.commit('SET_LIST',this.List)
         this.List.map(item => {
           item.active = false
@@ -208,6 +210,10 @@ export default {
               this.$store.commit('SET_ID', res.data.userinfo.user_id)
             }
           })
+          location.reload()
+          Notification.success({
+            title: '修改成功'
+          })
           this.openUserinfo = false
         }
         else{
@@ -230,6 +236,13 @@ export default {
           break
         }
       }
+    },
+    logout(){
+      this.$store.dispatch('LogOut').then(() => {
+        this.$router.replace("/login");
+        }).catch(err =>{
+        console.log(err);
+      })
     },
   },
 }

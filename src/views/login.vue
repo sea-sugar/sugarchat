@@ -26,11 +26,12 @@
         <div class="tool">
           <div>
             <el-checkbox v-model="remember" 
+            style="color: white;"
               >记住密码</el-checkbox
             >
           </div>
           <div>
-            <span class="shou" @click="forgetpas">忘记密码？</span>
+            <span class="shou" @click="forgetpas" style="color: white;">忘记密码？</span>
           </div>
         </div>
         <div class="butt">
@@ -40,12 +41,16 @@
           <el-button class="shou" @click="register">注册</el-button>
         </div>
       </div>
+      <footer class="footer">
+        <a href="https://github.com/sea-sugar/sugarchat.git" target="_blank">sea sugar</a> &copy; 2024
+      </footer>
     </div>
 </template>
   
 <script>
 import  { Base64 } from 'js-base64'
 import { getCookie , setCookie , removeCookie } from '@/utils/auth';
+import { Notification} from 'element-ui'
 export default {
     name: "login",
     data() {
@@ -80,6 +85,10 @@ export default {
           this.form.password = Base64.decode(getCookie("password"))
           this.remember = getCookie("remember")
       }
+      Notification.info({
+        title: '账号',
+        message: 'admin/123456',
+      })
     },
     methods: {
       login(form) {
@@ -155,15 +164,11 @@ export default {
   .loginbody {
     width: 100%;
     height: 100%;
-    min-width: 1000px;
-    /* background-image: url("../assets/login2.jpg"); */
-    background-size: 100% 100%;
-    background-position: center center;
-    overflow: auto;
-    background-repeat: no-repeat;
+    align-items: center;
     position: fixed;
     line-height: 100%;
     padding-top: 150px;
+    opacity: 0.8;
   }
   
   .logintext {
@@ -199,19 +204,23 @@ export default {
     color: #606266;
     font-size: 14px;
   }
-  
-  /*ui*/
-  /* /deep/ .el-form-item__label {
-    font-weight: bolder;
-    font-size: 15px;
-    text-align: left;
+  .footer {
+    position: fixed;
+    bottom: 10px;
+    right: 0;
+    left: 0;
+    margin: auto;
+    font-size: 13px;
+    width: 150px;
+    color: #ffffff;
+    text-align: center;
+    a {
+      color: #ffffff;
+      &:hover {
+        color: #377ec8;
+      }
+    }
   }
-  
-  /deep/ .el-button {
-    width: 100%;
-    margin-bottom: 10px;
-  
-  } */
   </style>
   
   

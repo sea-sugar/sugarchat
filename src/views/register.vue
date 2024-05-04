@@ -47,10 +47,10 @@
         </div>
         <div class="tool">
           <div>
-            <span class="shou" @click="login">使用已有账户登录</span>
+            <span class="shou" @click="login" style="color: white;">使用已有账户登录</span>
           </div>
           <div>
-            <span class="shou" @click="forgetpas">忘记密码？</span>
+            <span class="shou" @click="forgetpas" style="color: white;">忘记密码？</span>
           </div>
         </div>
         <div class="butt">
@@ -59,6 +59,9 @@
           >
         </div>
       </div>
+      <footer class="footer">
+        <a href="https://github.com/sea-sugar/sugarchat.git" target="_blank">sea sugar</a> &copy; 2024
+      </footer>
     </div>
 </template>
   
@@ -171,6 +174,7 @@ export default {
     position: fixed;
     line-height: 100%;
     padding-top: 150px;
+    opacity: 0.8;
   }
   
   .logintext {
@@ -205,6 +209,23 @@ export default {
     cursor: pointer;
     color: #606266;
     font-size: 14px;
+  }
+  .footer {
+    position: fixed;
+    bottom: 10px;
+    right: 0;
+    left: 0;
+    margin: auto;
+    font-size: 13px;
+    width: 150px;
+    color: #ffffff;
+    text-align: center;
+    a {
+      color: #ffffff;
+      &:hover {
+        color: #377ec8;
+      }
+    }
   }
   </style>
   

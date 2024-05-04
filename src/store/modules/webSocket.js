@@ -62,7 +62,6 @@ const webSocket = {
           });
 
           ws.on('receiveMessage',function (data) {
-            console.log(`${new Date().toLocaleString()} >>>>> 收到消息 ${(JSON.stringify(data))}`, state.ws);
             dispatch('receiveMessage',data)
           })
         } catch (error) {
@@ -72,14 +71,14 @@ const webSocket = {
       }
     },
     receiveMessage({state,rootState,commit},data){
-      console.log(data);
+      // console.log(data);
       for (let i = 0; i < rootState.user.list.length; i++) {
         if(data.group_id == rootState.user.list[i].group_id || data.receiver_id == rootState.user.user_id ){
           if (data.group_id == rootState.user.list[i].group_id) {
-            console.log("接收群聊消息");
+            console.log("接收群聊消息",data.content);
           }
           else if(data.receiver_id == rootState.user.user_id){
-            console.log("接收私聊消息");
+            console.log("接收私聊消息",data.content);
           }
           commit('SET_MESSAGE',data)
         }

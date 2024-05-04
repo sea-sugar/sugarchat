@@ -1,6 +1,6 @@
 <template>
     <div class="message-input-box">
-      <div class="input-tools">
+      <div class="input-tools" @click="bug">
         <i slot="reference" class="el-icon-s-opportunity" title="表情"></i>
         <i slot="reference" class="el-icon-folder-opened" title="文件"></i>
         <i slot="reference" class="el-icon-microphone" title="语音输入"></i>    
@@ -90,6 +90,13 @@ export default {
           this.sendMessage();
         }
       },
+      bug(){
+        this.$message({
+            type:"info",
+            message:"功能尚未开发",
+            showClose:true
+            })
+      }
     }
 }
 </script>

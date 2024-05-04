@@ -1,10 +1,12 @@
 ### sugarchat
+一个基于vue2、express、mysql的在线聊天网站。
 
+[后台地址](https://github.com/sea-sugar/seachat.git)
 ###### 下载安装
 
 ```bash
 ## 克隆项目源码包
-git clone 
+git clone https://github.com/sea-sugar/sugarchat.git
 
 ## 安装项目依赖扩展组件
 npm install
@@ -13,6 +15,8 @@ npm install
 npm run dev
 
 ```
+#### 项目展示
+![image](https://github.com/sea-sugar/sugarchat/blob/main/public/1.png)
 
 #### 一、vue2 无法监测数组和对象的新增属性
 对于新增加的属性，需要再手动初始化才能被 observe

@@ -12,6 +12,18 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  margin-top: 0px;
+  background:url("./assets/bgc.png");
+  width:100%;
+  height:100%;
+  position:fixed;
+  background-size:100% 100%;
+}
+
+body{
+  margin:0;
+  padding:0;
+  border:0
 }
 
 nav {

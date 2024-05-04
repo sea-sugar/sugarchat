@@ -28,6 +28,7 @@ export function getInfo() {
   })
 }
 
+// 注册
 export function register(data) {
     return request({
       url: '/user/register',
@@ -36,6 +37,7 @@ export function register(data) {
     })
 }
 
+// 获取好友列表
 export function getList() {
   return request({
     url: '/user/getList',
@@ -43,6 +45,7 @@ export function getList() {
   })
 }
 
+// 更新用户信息
 export function updateUserinfo(userinfoForm) {
   return request({
     url: '/user/updateUserinfo',
@@ -50,6 +53,17 @@ export function updateUserinfo(userinfoForm) {
     data:{
       username:userinfoForm.username,
       avatar:userinfoForm.avatar
+    }
+  })
+}
+
+// 添加联系人
+export function findfriends(inputId) {
+  return request({
+    url: '/user/findfriends',
+    method: 'post',
+    data:{
+      inputId:inputId,
     }
   })
 }

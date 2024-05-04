@@ -116,7 +116,7 @@ export default {
         this.loading = true
         if (this.totalMessages !== 0) {
           const totalPages = Math.ceil(this.totalMessages / 10);
-          console.log(page,totalPages);
+          // console.log(page,totalPages);
           if (page > totalPages) {
             this.moreMsg = false
             this.loading = false

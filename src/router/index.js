@@ -40,8 +40,9 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  base: "/chat",
   mode: 'history',
-  base: process.env.BASE_URL,
+  // base: process.env.BASE_URL,
   routes
 })
 

@@ -14,6 +14,11 @@ npm install
 # 启动本地开发环境
 npm run dev
 
+# 打包部署
+npm run build:prod
+docker build -t sugarchat .
+docker run -d -it --name sugarchat -p 8080:80 sugarchat
+
 ```
 #### 项目展示
 ![image](https://github.com/sea-sugar/sugarchat/blob/main/public/1.png)
